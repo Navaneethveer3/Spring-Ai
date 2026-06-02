@@ -75,7 +75,7 @@ public class ChatServiceImplementation implements ChatService{
 				.prompt()
 				.advisors(new SimpleLoggerAdvisor())
 				.system(system->system.text(this.systemMessage))
-				.user(user->user.text(this.userMessage).params(Map.of("concept", "Graph","subject","DSA")))
+				.user(user->user.text(this.userMessage).params(Map.of("concept", "Graph","subject","Data Structures and Algorithms")))
 				.call()
 				.content();
 		return response;
