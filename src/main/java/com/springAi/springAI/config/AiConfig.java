@@ -14,6 +14,7 @@ public class AiConfig {
 	@Bean
 	public ChatClient chatClient(ChatClient.Builder builder) {
 		return builder
+				.defaultAdvisors(new SimpleLoggerAdvisor(), new SafeGuardAdvisor(List.of("game")))
 				.defaultSystem("You are a helpful coding assistant. You are expert in coding")
 				.build();
 	}
