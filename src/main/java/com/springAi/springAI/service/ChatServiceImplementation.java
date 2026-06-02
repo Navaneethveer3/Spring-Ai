@@ -6,12 +6,21 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class ChatServiceImplementation implements ChatService{
 
 	private ChatClient chatClient;
+	
+	@Value("classpath:/prompts/user-prompt-1.txt")
+	private Resource userMessage;
+	
+	@Value("classpath:/prompts/system-prompt-1.txt")
+	private Resource systemMessage;
 	
 	public ChatServiceImplementation(ChatClient.Builder builder) {
 		this.chatClient = builder.build();
@@ -61,8 +70,8 @@ public class ChatServiceImplementation implements ChatService{
 		
 		String response = chatClient
 				.prompt()
-				.system(system->system.text("You are a helpful coding assistant. You are an expert in coding."))
-				.user(user->user.text("What is {techName}? tell me an example like{exampleName}").params(Map.of("techName","Spring","exampleName","Spring Exception")))
+				.system(system->system.text(this.systemMessage))
+				.user(user->user.text(this.userMessage).param("concept", "Graph"))
 				.call()
 				.content();
 		return response;
