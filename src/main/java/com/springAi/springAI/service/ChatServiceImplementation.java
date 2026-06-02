@@ -1,8 +1,11 @@
 package com.springAi.springAI.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
@@ -22,8 +25,8 @@ public class ChatServiceImplementation implements ChatService{
 	@Value("classpath:/prompts/system-prompt-1.txt")
 	private Resource systemMessage;
 	
-	public ChatServiceImplementation(ChatClient.Builder builder) {
-		this.chatClient = builder.build();
+	public ChatServiceImplementation(ChatClient chatClient) {
+		this.chatClient = chatClient;
 	}
 	
 	@Override
@@ -70,8 +73,9 @@ public class ChatServiceImplementation implements ChatService{
 		
 		String response = chatClient
 				.prompt()
+				.advisors(new SimpleLoggerAdvisor())
 				.system(system->system.text(this.systemMessage))
-				.user(user->user.text(this.userMessage).param("concept", "Graph"))
+				.user(user->user.text(this.userMessage).params(Map.of("concept", "Graph","subject","DSA")))
 				.call()
 				.content();
 		return response;
