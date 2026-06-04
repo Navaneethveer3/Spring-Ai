@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import com.springAi.springAI.service.ChatServiceImplementation;
 
+import reactor.core.publisher.Flux;
+
 import java.util.Map;
 
 @RestController
@@ -25,4 +27,9 @@ public class ChatController {
         String response = chatService.chat(prompt);
         return new ResponseEntity<>(Map.of("response", response),HttpStatus.OK);
     }
+	
+	@GetMapping("/streams")
+	public ResponseEntity<Flux<String>> streamChat(@RequestParam String prompt){
+		return new ResponseEntity<>(this.chatService.streamChat(prompt), HttpStatus.OK);
+	}
 }
