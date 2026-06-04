@@ -10,6 +10,7 @@ function App() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [modelOption, setModelOption] = useState('ask');
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -30,15 +31,50 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`http://localhost:8080/chat/ask?prompt=${encodeURIComponent(userMessage)}`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (modelOption === 'ask') {
+        const response = await fetch(`http://localhost:8080/chat/ask?prompt=${encodeURIComponent(userMessage)}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        setMessages(prev => [...prev, { role: 'bot', content: data.response || "No response field in JSON." }]);
+      } else {
+        const response = await fetch(`http://localhost:8080/chat/streams?prompt=${encodeURIComponent(userMessage)}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        setMessages(prev => [...prev, { role: 'bot', content: '' }]);
+        setIsLoading(false); // Hide loading when stream starts
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          let chunk = decoder.decode(value, { stream: true });
+          
+          if (chunk.startsWith("data:")) {
+            const lines = chunk.split('\n');
+            chunk = lines.filter(line => line.startsWith("data:")).map(line => line.replace("data:", "")).join('');
+          }
+
+          setMessages(prev => {
+            const newMessages = [...prev];
+            const lastIndex = newMessages.length - 1;
+            newMessages[lastIndex] = { 
+              ...newMessages[lastIndex], 
+              content: newMessages[lastIndex].content + chunk 
+            };
+            return newMessages;
+          });
+        }
       }
-      
-      const data = await response.json();
-      
-      setMessages(prev => [...prev, { role: 'bot', content: data.response || "No response field in JSON." }]);
     } catch (error) {
       console.error("Error fetching response:", error);
       setMessages(prev => [...prev, { role: 'bot', content: 'Connection Refused: I encountered an error connecting to the Spring Boot backend. Please ensure the server is running on port 8080.' }]);
@@ -59,9 +95,20 @@ function App() {
           </h1>
           <p>Local Model &bull; Spring Boot Engine</p>
         </div>
-        <div className="status-badge">
-          <div className="status-dot"></div>
-          System Online
+        <div className="header-actions">
+          <select 
+            className="model-select"
+            value={modelOption} 
+            onChange={(e) => setModelOption(e.target.value)}
+            disabled={isLoading}
+          >
+            <option value="ask">Normal Mode (Ask)</option>
+            <option value="streams">Stream Mode (Streams)</option>
+          </select>
+          <div className="status-badge">
+            <div className="status-dot"></div>
+            System Online
+          </div>
         </div>
       </div>
       
