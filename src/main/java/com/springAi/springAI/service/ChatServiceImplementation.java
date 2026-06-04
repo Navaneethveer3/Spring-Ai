@@ -89,7 +89,7 @@ public class ChatServiceImplementation implements ChatService{
 	public Flux<String> streamChat(String prompt, String userId) {
 		return this.chatClient
 				.prompt()
-				.system(system->system.text(this.systemMessage))
+				.system(system->system.text(this.systemMessage+"\n"))
 				.user(prompt)
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
 				.stream()
