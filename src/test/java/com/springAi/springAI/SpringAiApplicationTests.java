@@ -37,5 +37,15 @@ class SpringAiApplicationTests {
 		Flux<String> response = this.chatService.streamChat(prompt);
 		System.out.println(response);
 	}
+	
+	@Test
+	void checkChatMemory() {
+		String prompt1 = "a = 5";
+		String response1 = this.chatService.chat(prompt1);
+		System.out.println(response1);
+		String prompt2 = "What is the value of a?";
+		String response2 = this.chatService.chat(prompt2);
+		System.out.println(response2);
+	}
 
 }

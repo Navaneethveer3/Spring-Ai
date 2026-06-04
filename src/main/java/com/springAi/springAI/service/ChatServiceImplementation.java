@@ -36,7 +36,7 @@ public class ChatServiceImplementation implements ChatService{
 		return chatClient
                 .prompt()
                 .user(prompt)
-                .system("You are an expert as a top backend architect")
+                .system("You are an expert as a top backend architect. \n")
                 .advisors(a -> a.param("chat_memory_conversation_id", "chatId"))
                 .call()
                 .content();
@@ -76,7 +76,6 @@ public class ChatServiceImplementation implements ChatService{
 		
 		String response = chatClient
 				.prompt()
-				.advisors(new SimpleLoggerAdvisor())
 				.system(system->system.text(this.systemMessage))
 				.user(user->user.text(this.userMessage).params(Map.of("concept", "Graph","subject","Data Structures and Algorithms")))
 				.call()
