@@ -6,6 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.springAi.springAI.service.ChatServiceImplementation;
 
+import reactor.core.publisher.Flux;
+
 @SpringBootTest
 class SpringAiApplicationTests {
 
@@ -25,7 +27,14 @@ class SpringAiApplicationTests {
 	
 	@Test
 	void chatTemplate() {
-		String response = chatService.chatTemplate();
+		String response = this.chatService.chatTemplate();
+		System.out.println(response);
+	}
+	
+	@Test
+	void streamChat() {
+		String prompt = "What is a Graph?";
+		Flux<String> response = this.chatService.streamChat(prompt);
 		System.out.println(response);
 	}
 
