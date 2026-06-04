@@ -4,7 +4,7 @@ import reactor.core.publisher.Flux;
 
 public interface ChatService {
 
-	public String chat(String prompt);
+	public String chat(String prompt, String userId);
 	
-	public Flux<String> streamChat(String prompt);
+	public Flux<String> streamChat(String prompt, String userId);
 }
