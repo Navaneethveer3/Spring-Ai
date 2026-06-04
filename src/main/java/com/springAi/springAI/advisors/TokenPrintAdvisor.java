@@ -30,8 +30,9 @@ public class TokenPrintAdvisor implements CallAdvisor, StreamAdvisor{
 	@Override
 	public Flux<ChatClientResponse> adviseStream(ChatClientRequest chatClientRequest,
 			StreamAdvisorChain streamAdvisorChain) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		Flux<ChatClientResponse> chatClientResponseFlux = streamAdvisorChain.nextStream(chatClientRequest);
+		return chatClientResponseFlux;
 	}
 
 	@Override
