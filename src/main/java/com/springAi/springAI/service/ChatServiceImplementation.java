@@ -77,8 +77,8 @@ public class ChatServiceImplementation implements ChatService{
 		
 		String response = chatClient
 				.prompt()
-				.system(system->system.text(this.systemMessage+"\n"))
-				.user(user->user.text(this.userMessage+"\n").params(Map.of("concept", "Graph","subject","Data Structures and Algorithms")))
+				.system(system->system.text(this.systemMessage))
+				.user(user->user.text(this.userMessage).params(Map.of("concept", "Graph","subject","Data Structures and Algorithms")))
 				.call()
 				.content();
 		return response;
@@ -89,7 +89,7 @@ public class ChatServiceImplementation implements ChatService{
 	public Flux<String> streamChat(String prompt, String userId) {
 		return this.chatClient
 				.prompt()
-				.system(system->system.text(this.systemMessage+"\n"))
+				.system(system->system.text(this.systemMessage))
 				.user(prompt)
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
 				.stream()
