@@ -21,7 +21,7 @@ class SpringAiApplicationTests {
 	@Test
 	void chat() {
 		String prompt = "What is Spring Boot?";
-		String response = this.chatService.chat(prompt);
+		String response = this.chatService.chat(prompt,"john");
 		System.out.println(response);
 	}
 	
@@ -34,17 +34,17 @@ class SpringAiApplicationTests {
 	@Test
 	void streamChat() {
 		String prompt = "What is a Graph?";
-		Flux<String> response = this.chatService.streamChat(prompt);
+		Flux<String> response = this.chatService.streamChat(prompt,"john");
 		System.out.println(response);
 	}
 	
 	@Test
 	void checkChatMemory() {
 		String prompt1 = "a = 5";
-		String response1 = this.chatService.chat(prompt1);
+		String response1 = this.chatService.chat(prompt1,"john");
 		System.out.println(response1);
 		String prompt2 = "What is the value of a?";
-		String response2 = this.chatService.chat(prompt2);
+		String response2 = this.chatService.chat(prompt2,"john");
 		System.out.println(response2);
 	}
 
