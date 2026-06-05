@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -44,9 +45,10 @@ public class ChatServiceImplementation implements ChatService{
 	public String chat(String prompt, String userId) {
 		return chatClient
                 .prompt()
-                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
-                .user(prompt)
                 .system(system->system.text(this.systemMessage))
+                .user(prompt)
+                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
+                .advisors(QuestionAnswerAdvisor.builder(vectorStore).searchRequest(SearchRequest.builder().topK(3).similarityThreshold(0.5).build()).build())
                 .call()
                 .content();
 		
@@ -83,24 +85,20 @@ public class ChatServiceImplementation implements ChatService{
 //		Prompt prompt = new Prompt(systemMessage, userMessage);
 		
 		
-		SearchRequest searchRequest = SearchRequest.builder()
-				.topK(5)
-				.similarityThreshold(0.5)
-				.query(prompt)
-				.build();
-		
-		List<Document> result = this.vectorStore.similaritySearch(searchRequest);
-		List<String> documentList = result
-										.stream()
-										.map(item->item.getText())
-										.toList();
-		String contextData = String.join("\n", documentList);
+//		
+//		List<Document> result = this.vectorStore.similaritySearch(searchRequest);
+//		List<String> documentList = result
+//										.stream()
+//										.map(item->item.getText())
+//										.toList();
+//		String contextData = String.join("\n", documentList);
 		
 		String response = chatClient
 				.prompt()
-				.system(system->system.text(this.systemMessage).param("documents", contextData))
+				.system(system->system.text(this.systemMessage))
 				.user(prompt)
 				.advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
+				.advisors(QuestionAnswerAdvisor.builder(vectorStore).searchRequest(SearchRequest.builder().topK(3).similarityThreshold(0.5).build()).build())
 				.call()
 				.content();
 		return response;
@@ -114,6 +112,7 @@ public class ChatServiceImplementation implements ChatService{
 				.system(system->system.text(this.systemMessage))
 				.user(prompt)
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
+                .advisors(QuestionAnswerAdvisor.builder(vectorStore).searchRequest(SearchRequest.builder().topK(3).similarityThreshold(0.5).build()).build())
 				.stream()
 				.content();
 	}

@@ -31,7 +31,7 @@ class SpringAiApplicationTests {
 	
 	@Test
 	void chatTemplate() {
-		String response = this.chatService.chatTemplate("What are streams in Java?","guest");
+		String response = this.chatService.chatTemplate("Tell me about Java and streams within 100 words?","guest");
 		System.out.println(response);
 	}
 	

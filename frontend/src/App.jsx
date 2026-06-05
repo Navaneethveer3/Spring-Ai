@@ -11,6 +11,7 @@ function App() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [modelOption, setModelOption] = useState('ask');
+  const [userId] = useState(() => "user-" + Math.random().toString(36).substring(2, 9));
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -32,7 +33,11 @@ function App() {
 
     try {
       if (modelOption === 'ask') {
-        const response = await fetch(`http://localhost:8080/chat/ask?prompt=${encodeURIComponent(userMessage)}`);
+        const response = await fetch(`http://localhost:8080/chat/ask?prompt=${encodeURIComponent(userMessage)}`, {
+          headers: {
+            'userId': userId
+          }
+        });
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -41,7 +46,11 @@ function App() {
         const data = await response.json();
         setMessages(prev => [...prev, { role: 'bot', content: data.response || "No response field in JSON." }]);
       } else {
-        const response = await fetch(`http://localhost:8080/chat/streams?prompt=${encodeURIComponent(userMessage)}`);
+        const response = await fetch(`http://localhost:8080/chat/streams?prompt=${encodeURIComponent(userMessage)}`, {
+          headers: {
+            'userId': userId
+          }
+        });
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
