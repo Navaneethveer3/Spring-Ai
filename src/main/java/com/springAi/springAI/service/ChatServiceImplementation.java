@@ -12,6 +12,7 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -51,7 +52,7 @@ public class ChatServiceImplementation implements ChatService{
 		
 	}
 	
-	public String chatTemplate() {
+	public String chatTemplate(String prompt, String userId) {
 //		PromptTemplate promptTemplate = PromptTemplate
 //				.builder()
 //				.template("What is {techName}? tell me an example like {exampleName}")
@@ -82,11 +83,24 @@ public class ChatServiceImplementation implements ChatService{
 //		Prompt prompt = new Prompt(systemMessage, userMessage);
 		
 		
+		SearchRequest searchRequest = SearchRequest.builder()
+				.topK(5)
+				.similarityThreshold(0.5)
+				.query(prompt)
+				.build();
+		
+		List<Document> result = this.vectorStore.similaritySearch(searchRequest);
+		List<String> documentList = result
+										.stream()
+										.map(item->item.getText())
+										.toList();
+		String contextData = String.join("\n", documentList);
+		
 		String response = chatClient
 				.prompt()
-				.system(system->system.text(this.systemMessage))
-				.user(user->user.text(this.userMessage).params(Map.of("concept", "Graph","subject","Data Structures and Algorithms")))
-				.advisors(a -> a.param(ChatMemory.CONVERSATION_ID, "defaultTemplateUser"))
+				.system(system->system.text(this.systemMessage).param("documents", contextData))
+				.user(prompt)
+				.advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
 				.call()
 				.content();
 		return response;
