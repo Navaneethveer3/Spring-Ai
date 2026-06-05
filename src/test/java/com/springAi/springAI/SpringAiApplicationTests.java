@@ -11,12 +11,15 @@ import reactor.core.publisher.Flux;
 @SpringBootTest
 class SpringAiApplicationTests {
 
+	@Autowired
+	ChatServiceImplementation chatService;
+	
+	
 	@Test
 	void contextLoads() {
 	}
 	
-	@Autowired
-	ChatServiceImplementation chatService;
+	
 	
 	@Test
 	void chat() {
@@ -47,5 +50,17 @@ class SpringAiApplicationTests {
 		String response2 = this.chatService.chat(prompt2,"john");
 		System.out.println(response2);
 	}
-
+	
+	@Test
+	void checkPostgresChatMemory() {
+		String prompt1 = "Hi, I am lucifer";
+		String response1 = this.chatService.chat(prompt1, "lucifer");
+		System.out.println(response1);
+		String prompt2 = "I am interested and talented in punishing people";
+		String response2 = this.chatService.chat(prompt2, "lucifer");
+		System.out.println(response2);
+		String prompt3 = "Can you tell me what I am interested in?";
+		String response3 = this.chatService.chat(prompt3, "lucifer");
+		System.out.println(response3);
+	}
 }

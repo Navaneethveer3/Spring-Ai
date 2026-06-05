@@ -38,7 +38,7 @@ public class ChatServiceImplementation implements ChatService{
                 .prompt()
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
                 .user(prompt)
-                .system("You are an expert as a top backend architect. \n")
+                .system(system->system.text(this.systemMessage))
                 .call()
                 .content();
 		
