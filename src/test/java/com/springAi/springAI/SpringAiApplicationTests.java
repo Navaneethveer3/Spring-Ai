@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.springAi.springAI.helper.Helper;
 import com.springAi.springAI.service.ChatServiceImplementation;
 
 import reactor.core.publisher.Flux;
@@ -63,4 +64,11 @@ class SpringAiApplicationTests {
 		String response3 = this.chatService.chat(prompt3, "lucifer");
 		System.out.println(response3);
 	}
+	
+//	@Test
+//	void checkVectorDb() {
+//		System.out.println("saving data to DB");
+//		this.chatService.saveData(Helper.getData());
+//		System.out.println("Data is saved successfully");
+//	}
 }
