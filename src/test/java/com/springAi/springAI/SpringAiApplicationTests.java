@@ -65,10 +65,10 @@ class SpringAiApplicationTests {
 		System.out.println(response3);
 	}
 	
-//	@Test
-//	void checkVectorDb() {
-//		System.out.println("saving data to DB");
-//		this.chatService.saveData(Helper.getData());
-//		System.out.println("Data is saved successfully");
-//	}
+	@Test
+	void checkVectorDb() {
+		System.out.println("saving data to DB");
+		this.chatService.saveData(Helper.getData());
+		System.out.println("Data is saved successfully");
+	}
 }
