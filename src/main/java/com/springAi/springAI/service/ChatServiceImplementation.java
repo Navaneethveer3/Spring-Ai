@@ -33,6 +33,7 @@ public class ChatServiceImplementation implements ChatService{
 	private ChatClient chatClient;
 	
 	private VectorStore vectorStore;
+
 	
 	@Value("classpath:/prompts/user-prompt-1.txt")
 	private Resource userMessage;
@@ -47,12 +48,23 @@ public class ChatServiceImplementation implements ChatService{
 	
 	@Override
 	public String chat(String prompt, String userId) {
+		
+		var advisor = RetrievalAugmentationAdvisor.builder()
+				.documentRetriever(VectorStoreDocumentRetriever
+						.builder()
+						.vectorStore(this.vectorStore)
+						.topK(2)
+						.similarityThreshold(0.75)
+						.build())
+				.queryAugmenter(ContextualQueryAugmenter.builder().allowEmptyContext(true).build())
+				.build();
+		
 		return chatClient
                 .prompt()
                 .system(system->system.text(this.systemMessage))
                 .user(prompt)
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
-                .advisors(QuestionAnswerAdvisor.builder(vectorStore).searchRequest(SearchRequest.builder().topK(3).similarityThreshold(0.5).build()).build())
+                .advisors(advisor)
                 .call()
                 .content();
 		
@@ -102,7 +114,7 @@ public class ChatServiceImplementation implements ChatService{
 						.builder()
 						.vectorStore(this.vectorStore)
 						.topK(3)
-						.similarityThreshold(0.5)
+						.similarityThreshold(0.75)
 						.build())
 				.queryAugmenter(ContextualQueryAugmenter.builder().allowEmptyContext(true).build())
 				.build();
@@ -114,7 +126,7 @@ public class ChatServiceImplementation implements ChatService{
 				.system(system->system.text(this.systemMessage))
 				.user(prompt)
 				.advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
-				.advisors(advisor)
+				.advisors(advisor) 
 				.call()
 				.content();
 		return response;
@@ -128,7 +140,7 @@ public class ChatServiceImplementation implements ChatService{
 				.system(system->system.text(this.systemMessage))
 				.user(prompt)
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
-                .advisors(QuestionAnswerAdvisor.builder(vectorStore).searchRequest(SearchRequest.builder().topK(3).similarityThreshold(0.5).build()).build())
+                .advisors(QuestionAnswerAdvisor.builder(vectorStore).searchRequest(SearchRequest.builder().topK(2).similarityThreshold(0.75).build()).build())
 				.stream()
 				.content();
 	}

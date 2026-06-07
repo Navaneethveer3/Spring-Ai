@@ -20,7 +20,7 @@ public class AiConfig {
 	ChatMemory chatMemory(JdbcChatMemoryRepository jdbcChatMemoryRepository) {
 		return MessageWindowChatMemory.builder()
 				.chatMemoryRepository(jdbcChatMemoryRepository)
-				.maxMessages(10)
+				.maxMessages(3)
 				.build();
 	}
 	

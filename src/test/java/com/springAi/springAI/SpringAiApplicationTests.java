@@ -31,7 +31,8 @@ class SpringAiApplicationTests {
 	
 	@Test
 	void chatTemplate() {
-		String response = this.chatService.chatTemplate("Tell me about Java from what you know","guest");
+		String prompt = "enterprise use cases of spring boot";
+		String response = this.chatService.chatTemplate(prompt,"guest");
 		System.out.println(response);
 	}
 	
