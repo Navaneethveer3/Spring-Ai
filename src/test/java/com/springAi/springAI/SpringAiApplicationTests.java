@@ -31,7 +31,7 @@ class SpringAiApplicationTests {
 	
 	@Test
 	void chatTemplate() {
-		String prompt = "enterprise use cases of spring boot";
+		String prompt = "Tell me what's the temperature in hyderabad";
 		String response = this.chatService.chatTemplate(prompt,"guest");
 		System.out.println(response);
 	}

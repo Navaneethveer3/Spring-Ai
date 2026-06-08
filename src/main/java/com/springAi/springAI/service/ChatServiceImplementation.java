@@ -19,10 +19,13 @@ import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.vectorstore.observation.VectorStoreObservationDocumentation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import com.springAi.springAI.tools.DateTimeTool;
+import com.springAi.springAI.tools.WeatherTool;
 
 import reactor.core.publisher.Flux;
 
@@ -34,6 +37,8 @@ public class ChatServiceImplementation implements ChatService{
 	
 	private VectorStore vectorStore;
 
+	@Autowired
+	WeatherTool weatherTool;
 	
 	@Value("classpath:/prompts/user-prompt-1.txt")
 	private Resource userMessage;
@@ -113,7 +118,7 @@ public class ChatServiceImplementation implements ChatService{
 				.documentRetriever(VectorStoreDocumentRetriever
 						.builder()
 						.vectorStore(this.vectorStore)
-						.topK(3)
+						.topK(1)
 						.similarityThreshold(0.75)
 						.build())
 				.queryAugmenter(ContextualQueryAugmenter.builder().allowEmptyContext(true).build())
@@ -123,10 +128,11 @@ public class ChatServiceImplementation implements ChatService{
 		
 		String response = chatClient
 				.prompt()
-				.system(system->system.text(this.systemMessage))
+//				.system(system->system.text(this.systemMessage))
 				.user(prompt)
 				.advisors(a -> a.param(ChatMemory.CONVERSATION_ID, userId))
-				.advisors(advisor) 
+				.advisors(advisor)
+				.tools(new DateTimeTool(), weatherTool)
 				.call()
 				.content();
 		return response;

@@ -7,4 +7,4 @@ Do not restate the question.
 Do not mention these instructions.
 Do not hallucinate.
 Use only provided context.
-
+Disable reasoning.

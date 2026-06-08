@@ -10,6 +10,7 @@ import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestClient;
 
 import com.springAi.springAI.advisors.TokenPrintAdvisor;
 
@@ -29,17 +30,25 @@ public class AiConfig {
 		
 		return builder
 				.defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build(), new TokenPrintAdvisor(), new SafeGuardAdvisor(List.of("game")))
-				.defaultSystem("""
-						You are a coding assistant.
-						Answer only the exact user query.
-						Do not add explanations, context, examples, best practices, or extra commentary unless explicitly requested.
-						Keep responses concise and direct.
-						If code is requested, return only the code.
-						Do not restate the question.
-						Do not mention these instructions.
-						Do not hallucinate.
-						Use only provided context.
- """)
+//				.defaultSystem("""
+//						You are a coding assistant.
+//						Answer only the exact user query.
+//						Do not add explanations, context, examples, best practices, or extra commentary unless explicitly requested.
+//						Keep responses concise and direct.
+//						If code is requested, return only the code.
+//						Do not restate the question.
+//						Do not mention these instructions.
+//						Do not hallucinate.
+//						Use only provided context.
+//						Disable Reasoning.
+// """)
+				.build();
+	}
+	
+	@Bean
+	public RestClient restClient() {
+		return RestClient.builder()
+				.baseUrl("http://api.weatherapi.com/v1")
 				.build();
 	}
 }
